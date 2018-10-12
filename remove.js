@@ -32,6 +32,76 @@ class Node {
             return y
         }
     }
+    delete(val){
+        console.log("*****************************************start")
+        if(this.left != null && this.left.value == val){ // Found on left
+            console.log("*****************************************found on left")
+            if(this.left.left == null && this.left.right == null){ // No Kids
+                this.left = null
+            } else if(this.left.left != null && this.left.left.left == null && this.left.left.right == null){ // Left kid is leaf
+                this.left.left.right = this.left.right
+                this.left = this.left.left
+            } else if(this.left.right != null && this.left.right.left == null && this.left.right.right == null){ // Right kid is leaf
+                this.left.right.left = this.left.left
+                this.left = this.left.right
+            } else {
+                if(this.left.right != null){
+                    let x = this.left.right
+                    if(x.left == null){
+                        this.right.right = this.right.right.right
+                    } else {
+                        while(x.left.left != null){
+                            x = x.left
+                        }
+                        let temp = x.left
+                        x.left = x.left.right
+                        temp.left = this.left.left
+                        temp.right = this.left.right
+                        this.left = temp
+                    }
+                } else {
+                    this.left = this.left.left
+                }
+            }
+        } else if (this.right != null && this.right.value == val){ // Found on right
+            console.log("*****************************************found on right")
+            if(this.right.left == null && this.right.right == null){ // No Kids
+                this.right = null
+            } else if(this.right.left != null && this.right.left.left == null && this.right.left.right == null){ // Left kid is leaf
+                this.right.left.right = this.right.right
+                this.right = this.right.left
+            } else if(this.right.right != null && this.right.right.left == null && this.right.right.right == null){ // Right kid is leaf
+                this.right.right.left = this.right.left
+                this.right = this.right.right
+            } else {
+                if(this.right.right != null){
+                    let x = this.right.right
+                    if(x.left == null){
+                        this.right = this.right.right
+                    } else {
+                        while(x.left.left != null){
+                            x = x.left
+                        }
+                        let temp = x.left
+                        x.left = x.left.right
+                        temp.left = this.right.left
+                        temp.right = this.right.right
+                        this.right = temp
+                    }
+                } else {
+                    this.right = this.right.left
+                }
+            }
+        } else if (val < this.value){
+            if(this.left != null){
+                this.left.delete(val)
+            }
+        } else {
+            if(this.right != null){
+                this.right.delete(val)
+            } 
+        }
+    }
 }
 
 class BSearchTree {
@@ -115,35 +185,55 @@ class BSearchTree {
         console.log("The depth of this list is: " + depth)
         return this
     }
-    remove_once(val){
-        let i = this.root
-        if(i == null){
-            return false
-        } else if(i.value == val){
-            if(i.left == null && i.right == null){
+    remove(val){
+        if(this.root == null){
+            console.log("Empty BST")
+        } else if(this.root.value == val){
+            if(this.root.left == null && this.root.right == null){ // No Kids
                 this.root = null
+            } else if(this.root.left != null && this.root.left.left == null && this.root.left.right == null){ // Left kid is leaf
+                this.root.left.right = this.root.right
+                this.root = this.root.left
+            } else if(this.root.right != null && this.root.right.left == null && this.root.right.right == null){ // Right kid is leaf
+                this.root.right.left = this.root.left
+                this.root = this.root.right
             } else {
-                this.root
-            }
-        } else if(i.left != null){
-            
-        }
-    }
-    remove_all(val){
+                if(this.root.right != null){
+                    let x = this.root.right
+                    if(x.left == null){
+                        this.root.right.left = this.root.left
+                        this.root = this.root.right
+                    } else {
+                        while(x.left.left != null){
+                            x = x.left
+                        }
+                        let temp = x.left
+                        x.left = x.left.right
 
+                        temp.left = this.root.left
+                        temp.right = this.root.right
+                        this.root = temp
+                    }
+                } else {
+                    this.root = this.root.left
+                }
+            }
+        } else {
+            this.root.delete(val)
+        }
     }
 }
 
-var list = new BSearchTree(5)
+var list = new BSearchTree(9)
 
-list.insert(3).insert(1).insert(4).insert(5).insert(6).insert(-1).insert(100).insert(-2).insert(3).insert(5).insert(3)
+list.insert(12).insert(10).insert(1).insert(4).insert(5).insert(6).insert(-1).insert(100).insert(-2).insert(11).insert(3).insert(13)
+
+/* console.log(list.root)
+console.log(list.root.left)
+console.log(list.root.right) */
+
+list.remove(9)
 
 console.log(list.root)
-
-list.print_pre()
-
-list.print_post()
-
-list.print_in_order()
-
-list.depth()
+console.log(list.root.left)
+console.log(list.root.right)
